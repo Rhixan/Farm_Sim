@@ -10,8 +10,8 @@ void GameRender();
 void GameShutDown();
 void DrawTile(int pos_x, int pos_y, int texture_index_x, int texture_index_y);
 
-const int screenWidth = 800;
-const int screenHeight = 600;
+const int screenWidth = 1000;
+const int screenHeight = 800;
 
 #define MAX_TEXTURES 2
 
@@ -24,9 +24,17 @@ Texture2D textures[MAX_TEXTURES];
 #define WORLD_WIDTH 25
 #define WORLD_HEIGHT 25
 
+typedef enum {
+    TILE_TYPE_TREE = 0,
+    TILE_TYPE_GRASS,
+    TILE_TYPE_STONE,
+    //TILE_TYPE_DIRT,
+} tile_type;
+
 typedef struct {
     int x;
     int y;
+    int type;
 } sTile;
 
 sTile world[WORLD_WIDTH][WORLD_WIDTH];
@@ -54,6 +62,7 @@ void GameStartup() {
             {
                 .x = i,
                 .y = j,
+                .type = GetRandomValue(TILE_TYPE_TREE, TILE_TYPE_STONE)
             };
         }
     }
@@ -75,13 +84,13 @@ void GameUpdate() {
     float x = player.x;
     float y = player.y;
     if (IsKeyPressed(KEY_A)) {
-        x -= 1 * TILE_WIDTH;
+        x -= 0.5 * TILE_WIDTH;
     } else if (IsKeyPressed(KEY_D)) {
-        x += 1 * TILE_WIDTH;
+        x += 0.5 * TILE_WIDTH;
     } else if (IsKeyPressed(KEY_W)) {
-        y -= 1 * TILE_HEIGHT;
+        y -= 0.5 * TILE_HEIGHT;
     } else if (IsKeyPressed(KEY_S)) {
-        y += 1 * TILE_HEIGHT;
+        y += 0.5 * TILE_HEIGHT;
     }
 
     float wheel = GetMouseWheelMove();
@@ -108,8 +117,25 @@ void GameRender() {
     for (int i = 0; i < WORLD_WIDTH; i++) {
         for (int j = 0; j < WORLD_HEIGHT; j++) {
             tile = world[i][j];
-            texture_index_x = 7;
-            texture_index_y = 7;
+            switch (tile.type) {
+                case TILE_TYPE_TREE:
+                    texture_index_x = 13;
+                    texture_index_y = 6;
+                break;
+
+                case TILE_TYPE_GRASS:
+                    texture_index_x = 12;
+                    texture_index_y = 2;
+                break;
+
+                case TILE_TYPE_STONE:
+                    texture_index_x = 13;
+                    texture_index_y = 7;
+                break;
+
+                default:
+                    break;
+            }
 
             DrawTile(tile.x * TILE_WIDTH, tile.y * TILE_HEIGHT, texture_index_x, texture_index_y);    
         }
@@ -153,7 +179,7 @@ int main(void) {
         GameUpdate();
 
         BeginDrawing();
-        ClearBackground(GRAY);
+        ClearBackground(SKYBLUE);
 
         GameRender();
 
