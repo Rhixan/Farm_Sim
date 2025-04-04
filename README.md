@@ -12,15 +12,12 @@ A charming 2D farming simulator built with **Raylib** in C, featuring tile-based
 
 - 🌾 **Tile-based farming system** (plant, grow, harvest)
 - 🌲 **Procedural world generation** with trees, stones, and grass
-- 🏡 **Player house & farm expansion** (WIP)
-- 🎣 **Fishing & foraging mechanics** (Planned)
-- 📊 **Day/night cycle & seasons** (Coming soon)
+- 🏡 **Player land & farm expansion** (WIP)
 
 ## 🛠️ Tech Stack
 
 - **Raylib** - For 2D rendering and input handling
 - **Pure C** - Core game logic
-- **Procedural generation** - Dynamic world creation
 - **Makefile** - Simple build system
 
 ## 🚀 Getting Started
@@ -34,3 +31,4 @@ A charming 2D farming simulator built with **Raylib** in C, featuring tile-based
 git clone https://github.com/Rhixan/Farm_Sim.git
 cd Farm_Sim
 make
+./run
