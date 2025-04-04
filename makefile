@@ -8,7 +8,7 @@ CFLAGS = -Wall
 LDLIBS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 # Numele executabilului
-TARGET = prog
+TARGET = run
 
 # Fișierele sursă
 SRCS = main.c game.c
