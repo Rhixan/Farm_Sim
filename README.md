@@ -4,8 +4,6 @@ Farming Simulator project for TP
 
 # Farm Sim - A Cozy 2D Farming Adventure
 
-![Gameplay Screenshot](screenshots/gameplay.png) <!-- Add a screenshot later -->
-
 A charming 2D farming simulator built with **Raylib** in C, featuring tile-based farming, resource management, and peaceful rural vibes.
 
 ## Features
