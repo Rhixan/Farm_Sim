@@ -1,5 +1,5 @@
-#ifndef __GAME__
-#define __GAME__
+#ifndef __GAME_H__
+#define __GAME_H__
 
 #define TILE_WIDTH 64
 #define TILE_HEIGHT 64

@@ -11,7 +11,7 @@ LDLIBS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 TARGET = run
 
 # Fișierele sursă
-SRCS = main.c game.c
+SRCS = main.c game.c world.c
 
 # Fișierele obiect (generate automat)
 OBJS = $(SRCS:.c=.o)

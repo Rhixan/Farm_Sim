@@ -1,5 +1,8 @@
 #include "raylib.h"
+#include "raymath.h"
+
 #include "game.h"
+#include "world.h"
 
 const int screenWidth = 1000;
 const int screenHeight = 800;
@@ -7,14 +10,6 @@ const int screenHeight = 800;
 Camera2D camera = { 0 };
 sEntity player;
 Texture2D textures[MAX_TEXTURES];
-sTile world[WORLD_WIDTH][WORLD_WIDTH];
-
-void DrawTile(int pos_x, int pos_y, int texture_index_x, int texture_index_y) {
-    Rectangle source = { (float)texture_index_x * TILE_WIDTH, (float)texture_index_y * TILE_HEIGHT, (float)TILE_WIDTH, (float)TILE_HEIGHT };
-    Rectangle dest  = { (float)(pos_x), (float)(pos_y), (float)TILE_WIDTH, (float)TILE_HEIGHT};
-    Vector2 origin = {0, 0};
-    DrawTexturePro(textures[TEXTURE_TILEMAP], source, dest, origin, 0.0f, WHITE);
-}
 
 void GameStartup() {
 
@@ -24,26 +19,7 @@ void GameStartup() {
     textures[TEXTURE_TILEMAP] = LoadTextureFromImage(image);
     UnloadImage(image);
 
-    for (int i = 0; i < WORLD_WIDTH; i++) {
-        for (int j = 0; j < WORLD_HEIGHT; j++) {
-            int random = GetRandomValue(0, 100);
-            world[i][j] = (sTile)
-            {
-                .x = i,
-                .y = j,
-            };
-            if (random < GRASS_TILE_PROBABILITY) {
-                world[i][j].type = TILE_TYPE_GRASS;
-            } 
-            else if (random < GRASS_TILE_PROBABILITY + TREE_TILE_PROBABILITY) {
-                world[i][j].type = TILE_TYPE_TREE;
-            }
-            else {
-                world[i][j].type = TILE_TYPE_STONE;
-            }
-            
-        }
-    }
+    InitWorld();
 
     player = (sEntity)
     {
@@ -51,7 +27,7 @@ void GameStartup() {
         .y = TILE_HEIGHT * 3
     };
 
-    camera.target = (Vector2){player.x + 20.0f, player.y + 20.0f };
+    camera.target = Vector2Lerp (camera.target, (Vector2){player.x, player.y}, 0.1f);
     camera.offset = (Vector2){(float)screenWidth / 2.0f, (float)screenHeight / 2.0f };
     camera.rotation = 0.0f;
     camera.zoom = 2.0f;
@@ -62,14 +38,25 @@ void GameUpdate() {
 
     float x = player.x;
     float y = player.y;
-    if (IsKeyDown(KEY_A)) {
-        x -= 4;
-    } else if (IsKeyDown(KEY_D)) {
-        x += 4;
-    } else if (IsKeyDown(KEY_W)) {
-        y -= 4;
-    } else if (IsKeyDown(KEY_S)) {
-        y += 4;
+
+    float moveSpeed = 4.0f;
+    if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) {
+        x -= moveSpeed;
+    } else if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) {
+        x += moveSpeed;
+    } else if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)) {
+        y -= moveSpeed;
+    } else if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN   )) {
+        y += moveSpeed;
+    }
+
+    if(!IsOutOfBounds(x, y)) {
+        player.x = x;
+        player.y = y;
+    } else {
+        Vector2 clamped = ClampToWorld(x, y);
+        player.x = clamped.x;
+        player.y = clamped.y;
     }
 
     float wheel = GetMouseWheelMove();
@@ -79,9 +66,6 @@ void GameUpdate() {
         if (camera.zoom < 0.7f) camera.zoom = 0.7f;
         if (camera.zoom > 3.0f) camera.zoom = 3.0f;
     }
-
-    player.x = x;
-    player.y = y;
 
     camera.target = (Vector2){ player.x, player.y};
 
