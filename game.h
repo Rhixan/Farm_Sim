@@ -1,11 +1,13 @@
 #ifndef __GAME_H__
 #define __GAME_H__
 
-#define TILE_WIDTH 64
-#define TILE_HEIGHT 64
+#include "world.h"
 
-#define WORLD_WIDTH 25
-#define WORLD_HEIGHT 25
+#define TILE_WIDTH 64 // size in px
+#define TILE_HEIGHT 64 // size in px
+
+#define WORLD_WIDTH 25 // tiles in width
+#define WORLD_HEIGHT 25 // tiles in height
 
 #define MAX_TEXTURES 1
 
@@ -45,6 +47,8 @@ extern sEntity player;
 extern Texture2D textures[MAX_TEXTURES];
 
 extern sTile world[WORLD_WIDTH][WORLD_WIDTH];
+
+extern TimeSystem gameTime;
 
 void DrawTile(int pos_x, int pos_y, int texture_index_x, int texture_index_y);
 

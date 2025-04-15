@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "raylib.h"
 #include "raymath.h"
 
@@ -10,10 +12,13 @@ const int screenHeight = 800;
 Camera2D camera = { 0 };
 sEntity player;
 Texture2D textures[MAX_TEXTURES];
+TimeSystem gameTime;
 
 void GameStartup() {
 
     InitAudioDevice();
+
+    InitTimeSystem(&gameTime);
 
     Image image = LoadImage("textures/mapPack_spritesheet.png");
     textures[TEXTURE_TILEMAP] = LoadTextureFromImage(image);
@@ -69,6 +74,13 @@ void GameUpdate() {
 
     camera.target = (Vector2){ player.x, player.y};
 
+    UpdateTimeSystem(&gameTime, GetFrameTime());
+
+    // Debug controls for time speed
+    if (IsKeyPressed(KEY_Q)) gameTime.timeSpeedMultiplier *= 2.0f;
+    if (IsKeyPressed(KEY_E)) gameTime.timeSpeedMultiplier *= 0.5f;
+    if (IsKeyPressed(KEY_R)) gameTime.timeSpeedMultiplier = 1.0f;
+
 }
 void GameRender() {
 
@@ -107,6 +119,37 @@ void GameRender() {
     DrawTile(camera.target.x, camera.target.y, 1, 8);
 
     EndMode2D();
+
+    if(gameTime.isNight) {
+        float darkness = 1.0f - gameTime.dayLightIntensity;
+        DrawRectangle(0, 0, screenWidth, screenHeight,
+            ColorAlpha(gameTime.NightColor, darkness * 0.7f)
+        );
+        
+        DrawCircleGradient(
+            (player.x - camera.target.x) + screenWidth/2,
+            (player.y - camera.target.y) + screenHeight/2,
+            150,
+            ColorAlpha(YELLOW, 0.2f),
+            BLANK
+        );
+    }
+
+    char timeText[50];
+    snprintf(timeText, sizeof(timeText), "Year %d, Day %d \n%s  %02d:%02d x%.1f",
+        gameTime.year,
+        gameTime.day,
+        GetSeasonName(gameTime.season),
+        gameTime.hour,
+        gameTime.minute,
+        gameTime.timeSpeedMultiplier
+    );
+
+    DrawText(timeText, 10, 10, 20, BLACK);
+
+    //char speedText[50];
+    // snprintf(speedText, sizeof(speedText), "Time Speed: %.1fx", gameTime.timeSpeedMultiplier);
+    // DrawText(speedText, 10, 40, 20, RED);
 
     //DrawRectangle(5, 5, 330, 120, Fade(SKYBLUE, 0.5f));
     //DrawRectangleLines(5, 5, 330, 120, BLUE);
