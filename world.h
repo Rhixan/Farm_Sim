@@ -27,9 +27,16 @@ typedef struct {
     float timeSpeedMultiplier;
     float acumulatedseconds;
 
-    float dayLightIntensity;
-    Color NightColor;
-    bool isNight;
+    float currentLight;
+    float targetLight;
+    float lightTransitionSpeed;
+
+    float duskStart;
+    float nightStart;
+    float dawnStart;
+    float dayStart;
+
+    Color nightColor;
 } TimeSystem;
 
 extern Vector2 clamped;
@@ -48,7 +55,7 @@ void InitTimeSystem(TimeSystem* ts);
 void UpdateTimeSystem(TimeSystem* ts, float deltatime);
 const char* GetSeasonName(Season season);
 
-void UpdateDayLight(TimeSystem* ts);
+void UpdateDayLight(TimeSystem* ts, float deltaTime);
 float GetDayLight(const TimeSystem* ts);
 bool isNightTime(const TimeSystem* ts);
 

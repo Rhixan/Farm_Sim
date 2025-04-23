@@ -76,6 +76,8 @@ void GameUpdate() {
 
     UpdateTimeSystem(&gameTime, GetFrameTime());
 
+    UpdateDayLight(&gameTime, GetFrameTime());
+
     // Debug controls for time speed
     if (IsKeyPressed(KEY_Q)) gameTime.timeSpeedMultiplier *= 2.0f;
     if (IsKeyPressed(KEY_E)) gameTime.timeSpeedMultiplier *= 0.5f;
@@ -120,19 +122,18 @@ void GameRender() {
 
     EndMode2D();
 
-    if(gameTime.isNight) {
-        float darkness = 1.0f - gameTime.dayLightIntensity;
+    // day/night cycle
+    if(gameTime.currentLight < 0.99f) {
+        float nightIntensity = 1.0f - gameTime.currentLight;
+        Color nightColor = gameTime.nightColor;
+        nightColor.a = (unsigned char)(220 * nightIntensity);
+
         DrawRectangle(0, 0, screenWidth, screenHeight,
-            ColorAlpha(gameTime.NightColor, darkness * 0.7f)
+            Fade(nightColor, nightIntensity * 0.8f)
         );
-        
-        DrawCircleGradient(
-            (player.x - camera.target.x) + screenWidth/2,
-            (player.y - camera.target.y) + screenHeight/2,
-            150,
-            ColorAlpha(YELLOW, 0.2f),
-            BLANK
-        );
+
+        // Light debug info
+        // DrawText(TextFormat("Light: %.2f", gameTime.currentLight), 10, 70, 20, YELLOW);
     }
 
     char timeText[50];

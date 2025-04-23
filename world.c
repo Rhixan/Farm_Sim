@@ -9,30 +9,41 @@
 sTile world[WORLD_WIDTH][WORLD_WIDTH];
 
 void InitTimeSystem(TimeSystem* ts) {
-    ts->hour = 19; // start at 6:00 AM
+    ts->hour = 17; // start at 17:00 AM
     ts->minute = 0;
     ts->day = 1;
     ts->year = 1;
     ts->season = SEASON_SPRING;
     ts->timeSpeedMultiplier = 1.0f;
     ts->acumulatedseconds = 0.0f;
+
+    ts->lightTransitionSpeed = 0.2f;
+    ts->duskStart = 18.0f;
+    ts->nightStart = 20.0f;
+    ts->dawnStart = 4.0f;
+    ts->dayStart = 6.0f;
+    ts->nightColor = (Color){15, 25, 45, 255};
 }
 
-void UpdateDayLight(TimeSystem* ts) {
-    float hourProgress = (ts->hour + (ts->minute / 60.0f)) / HOURS_PER_DAY; 
-    ts->dayLightIntensity = sinf(hourProgress * PI * 2.0f) * 0.5f + 0.5f;
-    ts->dayLightIntensity = Clamp(ts->dayLightIntensity, 0.0f, 1.0f);
+void UpdateDayLight(TimeSystem* ts, float deltaTime) {
+    float currentHour = ts->hour + (ts->minute / 60.0f);
 
-    ts->NightColor = (Color){10, 20, 50, 200};
-    ts->isNight = (ts->hour < 6 || ts->hour >= 20);
-}
+    if(currentHour >= ts->nightStart || currentHour < ts->dawnStart) {
+        ts->targetLight = 0.0f; // full night
+    }
+    else if(currentHour >= ts->duskStart) {
+        float progress = (currentHour - ts->duskStart) / (ts->nightStart - ts->duskStart);
+        ts->targetLight = 1.0f - progress;
+    }
+    else if(currentHour >= ts->dawnStart) {
+        float progress = (currentHour - ts->dawnStart) / (ts->dayStart - ts->dawnStart);
+        ts->targetLight = progress;
+    }
+    else {
+        ts->targetLight = 1.0f;
+    }
 
-float GetDayLight(const TimeSystem* ts) {
-    return ts->dayLightIntensity;
-}
-
-bool isNightTime(const TimeSystem* ts) {
-    return ts->isNight;
+    ts->currentLight = Lerp(ts->currentLight, ts->targetLight, deltaTime * ts->lightTransitionSpeed);
 }
 
 void UpdateTimeSystem(TimeSystem* ts, float deltatime) {
@@ -61,7 +72,7 @@ void UpdateTimeSystem(TimeSystem* ts, float deltatime) {
                     }
                 }
             }
-            UpdateDayLight(ts);
+            // UpdateDayLight(ts, GetFrameTime());
         }
     }
 }
