@@ -1,43 +1,9 @@
 #ifndef __WORLD_H__
 #define __WORLD_H__
 
-#define HOURS_PER_DAY 24
-#define DAYS_PER_SEASON 7 
-#define MINUTES_PER_HOUR 60
-#define SECONDS_PER_MINUTE 60
-
-#define TIME_SPEED 60.0f // 1 sec irl = 1 min in game
-
-typedef enum {
-    SEASON_SPRING,
-    SEASON_SUMMER,
-    SEASON_AUTUMN,
-    SEASON_WINTER,
-    SEASON_COUNT
-} Season;
-
-typedef struct {
-    int year;
-    int hour;
-    int minute;
-    int day;
-
-    Season season;
-
-    float timeSpeedMultiplier;
-    float acumulatedseconds;
-
-    float currentLight;
-    float targetLight;
-    float lightTransitionSpeed;
-
-    float duskStart;
-    float nightStart;
-    float dawnStart;
-    float dayStart;
-
-    Color nightColor;
-} TimeSystem;
+#include "game.h"
+#include "items.h"
+#include "constants.h"
 
 extern Vector2 clamped;
 
@@ -56,7 +22,22 @@ void UpdateTimeSystem(TimeSystem* ts, float deltatime);
 const char* GetSeasonName(Season season);
 
 void UpdateDayLight(TimeSystem* ts, float deltaTime);
-float GetDayLight(const TimeSystem* ts);
-bool isNightTime(const TimeSystem* ts);
+
+int GetBaseTextureX(int baseType);
+int GetBaseTextureY(int baseType);
+
+int GetObjectTextureX(int object_type);
+int GetObjectTextureY(int object_type);
+
+// Crops
+void PlantCrop(int x, int y, ItemType seedType);
+bool isCropAtPosition(int x, int y);
+void HarvestCrop(int cropIndex);
+
+void UpdateCropsByDay(const TimeSystem* ts);
+
+void DrawShop();
+
+bool IsBlockedByObject(int tileX, int tileY);
 
 #endif

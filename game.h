@@ -2,46 +2,28 @@
 #define __GAME_H__
 
 #include "world.h"
+#include "items.h"
+#include "constants.h"
 
-#define TILE_WIDTH 64 // size in px
-#define TILE_HEIGHT 64 // size in px
-
-#define WORLD_WIDTH 25 // tiles in width
-#define WORLD_HEIGHT 25 // tiles in height
-
-#define MAX_TEXTURES 1
-
-#define GRASS_TILE_PROBABILITY 85 // 85%
-#define TREE_TILE_PROBABILITY 12 // 12%
-#define STONE_TILE_PROBABILITY 3 // 3%
 
 extern const int screenWidth;
 extern const int screenHeight;
 
-typedef struct {
-    int x;
-    int y;
-} sEntity;
+extern Crop crops[MAX_CROPS];
+extern int selectedCropType;
+extern bool showPlowMarker;
+extern Vector2 plowPosition;
 
-typedef struct {
-    int x;
-    int y;
-    int type;
-} sTile;
+extern ShopSystem shop;
 
-typedef enum {
-    TILE_TYPE_TREE = 0,
-    TILE_TYPE_GRASS,
-    TILE_TYPE_STONE,
-    //TILE_TYPE_DIRT,
-} tile_type;
+extern InventorySystem inventory;
 
-typedef enum {
-    TEXTURE_TILEMAP = 0
-} texture_asset;
+extern GameState gameState;
+extern GameState previousState;
+
+extern bool showEligibleTiles;
 
 extern Camera2D camera;
-
 extern sEntity player;
 
 extern Texture2D textures[MAX_TEXTURES];
@@ -50,11 +32,21 @@ extern sTile world[WORLD_WIDTH][WORLD_WIDTH];
 
 extern TimeSystem gameTime;
 
+extern Sound sfxBuy;
+extern Sound sfxSell;
+extern Sound sfxClick;
+
 void DrawTile(int pos_x, int pos_y, int texture_index_x, int texture_index_y);
+
+void DrawMainMenu();
+void DrawPauseMenu(void);
+void DrawOptionsMenu();
 
 void GameStartup();
 void GameUpdate();
 void GameRender();
 void GameShutDown();
+
+void AddItemToInventory(ItemType type, int quantity);
 
 #endif
